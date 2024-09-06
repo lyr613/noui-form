@@ -1,26 +1,27 @@
 import { BehaviorSubject, Observable } from 'rxjs'
 
-export interface Ctrl<Data extends Record<string, any> = {}> {
-    /**
-     * @deprecated
-     * only developer use this
-     */
-    __anemia: Anemia<Data>
+export interface Ctrl<Data extends Record<string, any> = {}> extends CtrlProtoPart<Data>, CtrlSelfPart<Data> {}
+
+export interface CtrlSelfPart<Data extends Record<string, any> = {}> {
     keys: deep_keys<Data>
-    default_value: () => default_value
+    /** 初始值 */
+    original: () => Data
+}
+
+export interface CtrlProtoPart<Data extends Record<string, any> = {}> {
     now(): Data
-    set(setter: (val: Data) => void): void
+    set(setter: (data: Data) => void): void
     get$(): Observable<Data>
-    get$<T extends any = Data>(getter: (val: Data) => T): Observable<T>
+    get$<T extends any = Data>(getter: (data: Data) => T): Observable<T>
     init(): void
 }
-// #region private
-type version = () => [number, number, number]
 
-export interface Anemia<Data extends Record<string, any> = {}> {
-    value$: BehaviorSubject<Data>
-    default_value: () => default_value
+export interface CtrlDevPart<Data extends Record<string, any> = {}> {
+    _version: () => [number, number, number]
+    _flag: () => 'qsoft'
+    _value$: BehaviorSubject<Data>
 }
+export interface CtrlDev<Data extends Record<string, any> = {}> extends Ctrl<Data>, CtrlDevPart<Data> {}
 
 // compute keys
 type filter_never<T> = {
