@@ -1,8 +1,26 @@
 import { describe, expect, test } from '@jest/globals'
-import { NOUI } from './index'
+import { noui } from './index'
 import { take } from 'rxjs'
 
-function data() {
+interface Data {
+    name: string
+    age: number
+    nil: null
+    undef: undefined
+    family: {
+        link: string
+        age: number
+        links: string[]
+    }[]
+    other: {
+        qqq: number
+        www: string
+        lll: number[]
+    }
+    sym: symbol
+}
+
+function data(): Data {
     return {
         name: 'orb',
         age: 18,
@@ -31,8 +49,7 @@ function data() {
 
 describe('sum module', () => {
     test('qqq', () => {
-        const ctrl = NOUI.make(data)
-        const ctrl2 = NOUI.make(data)
+        const ctrl = noui.make(data)
         // console.log('---')
         // console.log(
         //     'keys',
@@ -57,5 +74,11 @@ describe('sum module', () => {
         //     })
         ctrl.init()
         expect(ctrl.now().age).toBe(18)
+
+        ctrl.get$((f) => {
+            return f.age
+        }).subscribe((f) => {
+            console.log(f)
+        })
     })
 })

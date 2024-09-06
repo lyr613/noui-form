@@ -1,21 +1,24 @@
 import { BehaviorSubject, Observable } from 'rxjs'
 
-export interface Ctrl<Value extends Record<string, any> = {}> {
+export interface Ctrl<Data extends Record<string, any> = {}> {
     /**
      * @deprecated
      * only developer use this
      */
-    __anemia: Anemia<Value>
-    keys: deep_keys<Value>
+    __anemia: Anemia<Data>
+    keys: deep_keys<Data>
     default_value: () => default_value
-    now(): Value
-    set(setter: (val: Value) => void): void
-    get$<T extends any = null>(getter: (val: Value) => T): Observable<T>
+    now(): Data
+    set(setter: (val: Data) => void): void
+    get$(): Observable<Data>
+    get$<T extends any = Data>(getter: (val: Data) => T): Observable<T>
     init(): void
 }
+// #region private
+type version = () => [number, number, number]
 
-export interface Anemia<Value extends Record<string, any> = {}> {
-    value$: BehaviorSubject<Value>
+export interface Anemia<Data extends Record<string, any> = {}> {
+    value$: BehaviorSubject<Data>
     default_value: () => default_value
 }
 
@@ -23,16 +26,16 @@ export interface Anemia<Value extends Record<string, any> = {}> {
 type filter_never<T> = {
     [K in keyof T as T[K] extends never ? never : K]: T[K] extends Record<string, any> ? filter_never<T[K]> : T[K]
 }
-type deep_keys_step1<Value extends Record<string, any>> = {
-    [K in keyof Value & string]: Value[K] extends number | string | boolean | null | undefined
+type deep_keys_step1<KV extends Record<string, any>> = {
+    [K in keyof KV & string]: KV[K] extends number | string | boolean | null | undefined
         ? string
-        : Value[K] extends any[]
+        : KV[K] extends any[]
         ? never
-        : Value[K] extends Record<string, any>
-        ? deep_keys_step1<Value[K]>
+        : KV[K] extends Record<string, any>
+        ? deep_keys_step1<KV[K]>
         : never
 }
-export type deep_keys<Value extends Record<string, any>> = filter_never<deep_keys_step1<Value>>
+export type deep_keys<KV extends Record<string, any>> = filter_never<deep_keys_step1<KV>>
 
 export type only_function<KV extends Record<string, any>> = {
     [K in keyof KV & string as KV[K] extends Function ? K : never]: Function

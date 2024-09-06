@@ -2,12 +2,12 @@ import { BehaviorSubject, map, Observable, take } from 'rxjs'
 import { Ctrl, Anemia, deep_keys, without_function, only_function } from './type'
 import { produce } from 'immer'
 
-export function make<Value extends Record<string, any> = {}>(default_value: () => Value): Ctrl<Value> {
+export function make<Data extends Record<string, any> = {}>(default_value: () => Data): Ctrl<Data> {
     const value0 = produce(default_value(), (def) => {
         return def
     })
     const value$ = new BehaviorSubject(value0)
-    const c: without_function<Value> = {
+    const c: without_function<Data> = {
         __anemia: {
             value$,
             default_value,
@@ -26,30 +26,38 @@ export function make<Value extends Record<string, any> = {}>(default_value: () =
     return c as any
 }
 
-function _now<Value extends Record<string, any> = {}>(this: without_function<Value>) {
+function _now<Data extends Record<string, any> = {}>(this: without_function<Data>) {
     return this.__anemia.value$.value
 }
-function _init<Value extends Record<string, any> = {}>(this: without_function<Value>) {
+function _init<Data extends Record<string, any> = {}>(this: without_function<Data>) {
     const value0: any = produce(this.__anemia.default_value(), (def: any) => {
         return def
     })
     return this.__anemia.value$.next(value0)
 }
 
-function _set<Value extends Record<string, any> = {}>(this: without_function<Value>, setter: (val: Value) => void) {
+function _set<Data extends Record<string, any> = {}>(this: without_function<Data>, setter: (val: Data) => void) {
     const val$ = this.__anemia.value$
     const next = produce(val$.value, setter)
     val$.next(next)
 }
-function _get$<Value extends Record<string, any> = {}, T extends any = null>(
-    this: without_function<Value>,
-    getter: (val: Value) => T,
-): Observable<T> {
+function _get$<Data extends Record<string, any> = {}>(this: without_function<Data>): Observable<Data>
+function _get$<Data extends Record<string, any> = {}, T extends any = Data>(
+    this: without_function<Data>,
+    getter: (val: Data) => T,
+): Observable<T>
+function _get$<Data extends Record<string, any> = {}, T extends any = Data>(
+    this: without_function<Data>,
+    getter?: (val: Data) => T,
+): Observable<T | Data> {
     const val$ = this.__anemia.value$
+    if (!getter) {
+        return val$.pipe()
+    }
     return val$.pipe(map(getter))
 }
 
-function make_keys<Value extends Record<string, any> = {}>(value: Value): deep_keys<Value> {
+function make_keys<Data extends Record<string, any> = {}>(value: Data): deep_keys<Data> {
     const r: any = {}
     let key_queue = Object.keys(value).map((key) => ({
         from: value,
