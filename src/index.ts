@@ -1,6 +1,3 @@
-import { make } from './make'
+export * from './collect'
 
-export const NOUI = {
-    version: '0.0.1',
-    make,
-}
+export * as noui from './collect'

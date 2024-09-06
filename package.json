@@ -1,8 +1,8 @@
 {
     "name": "@lyr613/noui-form",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "main": "dist/index.js",
-    "type": "module",
+    "type": "commonjs",
     "scripts": {
         "test": "jest",
         "build": "node ./scripts/build.cjs"
@@ -27,6 +27,7 @@
         "@types/jest": "^29.5.12",
         "babel-jest": "^29.7.0",
         "ts-jest": "^29.2.4",
-        "ts-node": "^10.9.2"
+        "ts-node": "^10.9.2",
+        "tslib": "^2.7.0"
     }
 }
