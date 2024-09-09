@@ -1,0 +1,14 @@
+{
+    "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+        "module": "ESNext",
+        "outDir": "dist/mjs",
+        "target": "ESNext",
+        "moduleResolution": "Bundler",
+        "paths": {
+            "rxjs": ["./node_modules/rxjs"],
+            "immer": ["./node_modules/immer"]
+        }
+        // "moduleResolution": "NodeNext"
+    }
+}
