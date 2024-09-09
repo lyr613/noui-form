@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals'
 import { noui } from './index'
-import { take } from 'rxjs'
+import { map, take, timer } from 'rxjs'
 import { compute_path } from './self'
 
 describe('self', () => {
@@ -173,6 +173,24 @@ describe('check & report', () => {
             note: 'age must > 18',
             path: ctrl.paths.age,
             well: true,
+        })
+
+        ctrl.check_once$((f) => {
+            return timer(2000).pipe(
+                map(() => {
+                    return {
+                        note: 'age must > 18',
+                        path: ctrl.paths.age,
+                        well: true,
+                    }
+                }),
+            )
+        }).subscribe((r) => {
+            expect(ctrl.report(ctrl.paths.age)).toEqual({
+                note: 'age must > 18',
+                path: ctrl.paths.age,
+                well: true,
+            })
         })
     })
 })
