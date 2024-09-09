@@ -2,13 +2,11 @@ import { produce } from 'immer'
 import { BehaviorSubject, map, Observable } from 'rxjs'
 import { Ctrl, CtrlDev, CtrlDevPart, CtrlProtoPart, CtrlSelfPart, deep_path } from './type'
 import { _flag, _version } from './infor'
-import { _now, _get$, _init, _set } from './protos'
+import { _now, _get$, _init, _set, _check, _check_once$, _report, _report$ } from './protos'
 import { compute_path } from './self'
 
 export function make<Data extends Record<string, any> = {}>(original: () => Data): Ctrl<Data> {
-    const value0 = produce(original(), (v0) => {
-        return v0
-    })
+    const value0 = produce(original(), () => {})
     const value$ = new BehaviorSubject(value0)
     const selfs: CtrlSelfPart<Data> = {
         original: original,
@@ -16,6 +14,7 @@ export function make<Data extends Record<string, any> = {}>(original: () => Data
     }
     const dev_part: CtrlDevPart<Data> = {
         _value$: value$,
+        _report$: new BehaviorSubject(produce({}, () => {})),
         _flag: _flag,
         _version,
     }
@@ -29,6 +28,10 @@ export function make<Data extends Record<string, any> = {}>(original: () => Data
         set: _set,
         get$: _get$,
         init: _init,
+        check: _check,
+        check_once$: _check_once$,
+        report: _report,
+        report$: _report$,
     }
     Object.setPrototypeOf(c, protos)
 

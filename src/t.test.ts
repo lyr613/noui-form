@@ -142,3 +142,37 @@ describe('sum module', () => {
         })
     })
 })
+
+// #region check
+describe('check & report', () => {
+    const ctrl = noui.make(data)
+    ctrl.set((f) => {
+        f.age = 19
+    })
+    test('check', () => {
+        expect(
+            ctrl.check(
+                (f) => {
+                    return {
+                        note: 'age must > 18',
+                        path: ctrl.paths.age,
+                        well: f.age > 18,
+                    }
+                },
+                {
+                    update_report: true,
+                },
+            ),
+        ).toEqual({
+            note: 'age must > 18',
+            path: ctrl.paths.age,
+            well: true,
+        })
+
+        expect(ctrl.report(ctrl.paths.age)).toEqual({
+            note: 'age must > 18',
+            path: ctrl.paths.age,
+            well: true,
+        })
+    })
+})

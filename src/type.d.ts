@@ -32,6 +32,28 @@ export interface CtrlProtoPart<Data extends Record<string, any> = {}> {
     get$<T extends any = Data>(getter: (data: Data) => T): Observable<T>
     /** 初始化值, 使用构建ctrl时的函数 */
     init(): void
+    check(
+        checker: (data: Data) => CheckResult,
+        options?: {
+            /** default true */
+            update_report?: boolean
+        },
+    ): CheckResult
+    check_once$(
+        checker: (data: Data) => Observable<CheckResult>,
+        options?: {
+            /** default true */
+            update_report?: boolean
+        },
+    ): Observable<CheckResult>
+    report(path: string): CheckResult | undefined
+    report$(path: string): Observable<CheckResult | undefined>
+}
+
+export interface CheckResult {
+    path: string
+    well: boolean
+    note: string
 }
 
 /** 开发库内部使用 */
@@ -39,6 +61,7 @@ export interface CtrlDevPart<Data extends Record<string, any> = {}> {
     _version: () => [number, number, number]
     _flag: () => '@lyr613/noui-form'
     _value$: BehaviorSubject<Data>
+    _report$: BehaviorSubject<Record<string, CheckResult | undefined>>
 }
 /** 开发库内部使用 */
 export interface CtrlDev<Data extends Record<string, any> = {}> extends Ctrl<Data>, CtrlDevPart<Data> {}
