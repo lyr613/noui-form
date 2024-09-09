@@ -1,6 +1,66 @@
 import { describe, expect, test } from '@jest/globals'
 import { noui } from './index'
 import { take } from 'rxjs'
+import { compute_path } from './self'
+
+describe('self', () => {
+    interface Node1 {
+        num: number
+        str: string
+        bool: boolean
+        nil: null
+        undef: undefined
+        li: number[]
+        obj: {
+            num: number
+            li: number[]
+            node2: Node2
+        }
+        node2: Node2
+        node1: Node1
+    }
+    interface Node2 extends Record<string, any> {
+        node1: Node1
+        str: string
+    }
+    const node1: Node1 = {
+        num: 1,
+        str: 'a',
+        bool: true,
+        nil: null,
+        undef: undefined,
+        li: [1, 2, 3],
+        obj: {
+            num: 2,
+            li: [4, 5, 6],
+            node2: null as any,
+        },
+        node2: null as any,
+        node1: null as any,
+    }
+    const node2: Node2 = {
+        node1,
+        str: 'b',
+    }
+    node1.node1 = node1
+    node1.node2 = node2
+    node1.obj.node2 = node2
+
+    const cpath = compute_path(node1)
+    test('compute_path', () => {
+        expect(cpath.num).toBe('num')
+        expect(cpath.str).toBe('str')
+        expect(cpath.bool).toBe('bool')
+        expect(cpath.nil).toBe('nil')
+        expect(cpath.undef).toBe('undef')
+        // expect(cpath.li).toBe('li')
+        expect(cpath.obj.num).toBe('obj.num')
+        // expect(cpath.obj.li).toBe('obj.li')
+        expect(cpath.node2.node1).toBe('node2.node1')
+        expect(cpath.node2.str).toBe('node2.str')
+        expect(cpath.node1).toBe('node1')
+    })
+})
 
 interface Data {
     name: string
