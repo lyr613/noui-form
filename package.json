@@ -3,6 +3,12 @@
     "version": "0.0.5",
     "main": "dist/index.js",
     "type": "commonjs",
+    "exports": {
+        ".": {
+            "import": "./src/index.ts",
+            "require": "./dist/index.js"
+        }
+    },
     "scripts": {
         "test": "jest",
         "build": "node ./scripts/build.cjs"

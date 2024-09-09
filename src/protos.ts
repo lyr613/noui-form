@@ -1,6 +1,6 @@
 import { produce } from 'immer'
 import { BehaviorSubject, map, Observable } from 'rxjs'
-import { Ctrl, CtrlDev, CtrlDevPart, CtrlProtoPart, CtrlSelfPart, deep_keys } from './type'
+import { Ctrl, CtrlDev, CtrlDevPart, CtrlProtoPart, CtrlSelfPart, deep_path } from './type'
 
 export function _now<Data extends Record<string, any> = {}>(this: CtrlDev<Data>) {
     return this._value$.value
