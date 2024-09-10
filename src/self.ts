@@ -48,6 +48,7 @@ export function compute_path<Data extends Record<string, any> = {}>(value: Data)
                 }
 
             default:
+                cur.to[cur.key] = cur_key
                 break
         }
     }
