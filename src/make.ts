@@ -2,7 +2,7 @@ import { produce } from 'immer'
 import { BehaviorSubject, map, Observable } from 'rxjs'
 import { Ctrl, CtrlDev, CtrlDevPart, CtrlProtoPart, CtrlSelfPart, deep_path } from './type'
 import { _flag, _version } from './infor'
-import { _now, _get$, _init, _set, _check, _check_once$, _report, _report$, _report_has_bad } from './protos'
+import { _now, _get$, _init, _set, _check_path, _check$, _report, _report$, _report_has_bad } from './protos'
 import { compute_path } from './self'
 
 export function make<Data extends Record<string, any> = {}>(original: () => Data): Ctrl<Data> {
@@ -28,8 +28,8 @@ export function make<Data extends Record<string, any> = {}>(original: () => Data
         set: _set,
         get$: _get$,
         init: _init,
-        check: _check,
-        check_once$: _check_once$,
+        check_path: _check_path,
+        check$: _check$,
         report: _report,
         report$: _report$,
         report_has_bad: _report_has_bad,

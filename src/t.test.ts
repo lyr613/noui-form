@@ -136,7 +136,7 @@ describe('check & report', () => {
     })
     test('check', () => {
         expect(
-            ctrl.check(
+            ctrl.check_path(
                 (f) => {
                     return {
                         note: 'age must > 18',
@@ -156,7 +156,7 @@ describe('check & report', () => {
 
         expect(ctrl.report()[ctrl.paths.age]).toEqual(undefined)
 
-        ctrl.check_once$((f) => {
+        ctrl.check$((f) => {
             return timer(2000).pipe(
                 map(() => {
                     return {
@@ -174,7 +174,7 @@ describe('check & report', () => {
         ctrl.set((f) => {
             f.age = 17
         })
-        ctrl.check((f) => {
+        ctrl.check_path((f) => {
             return {
                 note: 'age must > 18',
                 path: ctrl.paths.age,

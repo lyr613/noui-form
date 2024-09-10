@@ -1,8 +1,4 @@
-import { produce } from 'immer'
-import { BehaviorSubject, map, Observable } from 'rxjs'
-import { Ctrl, CtrlDev, CtrlDevPart, CtrlProtoPart, CtrlSelfPart, deep_path } from './type'
-import { _flag, _version } from './infor'
-import { _now, _get$, _init, _set } from './protos'
+import { deep_path } from './type'
 
 export function compute_path<Data extends Record<string, any> = {}>(value: Data): deep_path<Data> {
     const r: any = {}
