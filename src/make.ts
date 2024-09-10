@@ -2,13 +2,13 @@ import { produce } from 'immer'
 import { BehaviorSubject, map, Observable } from 'rxjs'
 import { Ctrl, CtrlDev, CtrlDevPart, CtrlProtoPart, CtrlSelfPart, deep_path } from './type'
 import { _flag, _version } from './infor'
-import { _now, _get$, _init, _set, _check, _check_once$, _report, _report$ } from './protos'
+import { _now, _get$, _init, _set, _check, _check_once$, _report, _report$, _report_has_bad } from './protos'
 import { compute_path } from './self'
 
 export function make<Data extends Record<string, any> = {}>(original: () => Data): Ctrl<Data> {
     const value0 = produce(original(), () => {})
     const value$ = new BehaviorSubject(value0)
-    const selfs: CtrlSelfPart<Data> = {
+    const self_part: CtrlSelfPart<Data> = {
         original: original,
         paths: compute_path(value0),
     }
@@ -18,12 +18,12 @@ export function make<Data extends Record<string, any> = {}>(original: () => Data
         _flag: _flag,
         _version,
     }
-    const c = {
-        ...selfs,
+    const _dev = {
+        ...self_part,
         ...dev_part,
-    }
+    } as CtrlDev<Data>
 
-    const protos: CtrlProtoPart<Data> = {
+    const proto_part: CtrlProtoPart<Data> = {
         now: _now,
         set: _set,
         get$: _get$,
@@ -32,8 +32,9 @@ export function make<Data extends Record<string, any> = {}>(original: () => Data
         check_once$: _check_once$,
         report: _report,
         report$: _report$,
+        report_has_bad: _report_has_bad,
     }
-    Object.setPrototypeOf(c, protos)
+    Object.setPrototypeOf(_dev, proto_part)
 
-    return c as any
+    return _dev
 }

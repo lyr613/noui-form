@@ -1,5 +1,5 @@
 import { produce } from 'immer'
-import { BehaviorSubject, map, Observable, take } from 'rxjs'
+import { BehaviorSubject, map, Observable, take, tap } from 'rxjs'
 import { Ctrl, CtrlDev, CtrlDevPart, CtrlProtoPart, CtrlSelfPart, deep_path, CheckResult } from './type'
 
 export function _now<Data extends Record<string, any> = {}>(this: CtrlDev<Data>) {
@@ -55,28 +55,78 @@ export function _check<Data extends Record<string, any> = {}>(
 
 export function _check_once$<Data extends Record<string, any> = {}>(
     this: CtrlDev<Data>,
-    checker: (data: Data) => Observable<CheckResult>,
+    checker: (data: Data) => Observable<Record<string, CheckResult | undefined>>,
     options?: {
         /** default true */
         update_report?: boolean
     },
-): Observable<CheckResult> {
-    const sub = checker(this._value$.value)
-    if (options?.update_report ?? true) {
-        sub.pipe(take(1)).subscribe((result) => {
-            const now_report = this._report$.value
-            const next_report = produce(now_report, (draft) => {
-                draft[result.path] = result
-            })
-            this._report$.next(next_report)
-        })
-    }
-    return sub.pipe(take(1))
+): Observable<Record<string, CheckResult | undefined>> {
+    return checker(this._value$.value).pipe(
+        take(1),
+        tap((result) => {
+            if (options?.update_report ?? true) {
+                const now_report = this._report$.value
+                const next_report = produce(now_report, (draft) => {
+                    Object.assign(draft, result)
+                })
+                this._report$.next(next_report)
+            }
+        }),
+    )
 }
 
-export function _report(this: CtrlDev<any>, path: string): CheckResult | undefined {
-    return this._report$.value[path]
+export function _report(
+    this: CtrlDev<{}>,
+    options?: {
+        /** default true */
+        only_bad?: boolean
+    },
+): Record<string, CheckResult | undefined> {
+    const only_bad = options?.only_bad ?? true
+    const report = this._report$.value
+    return filter_report_only_bad(report, only_bad)
 }
-export function _report$(this: CtrlDev<any>, path: string): Observable<CheckResult | undefined> {
-    return this._report$.pipe(map((report) => report[path]))
+
+export function _report$(
+    this: CtrlDev<{}>,
+    options?: {
+        /** default true */
+        only_bad?: boolean
+    },
+): Observable<Record<string, CheckResult | undefined>> {
+    return this._report$.pipe(
+        map((report) => {
+            const only_bad = options?.only_bad ?? true
+            return filter_report_only_bad(report, only_bad)
+        }),
+    )
+}
+
+function filter_report_only_bad(
+    report: Record<string, CheckResult | undefined>,
+    only_bad: boolean,
+): Record<string, CheckResult | undefined> {
+    if (!only_bad) {
+        return report
+    }
+    return produce({}, (draft: Record<string, CheckResult | undefined>) => {
+        Object.keys(report).forEach((key) => {
+            const v = report[key]
+            if (v?.well === false) {
+                draft[key] = v
+            }
+        })
+    })
+}
+
+export function _report_has_bad(this: CtrlDev<{}>): boolean {
+    return Object.values(this._report$.value).some((v) => {
+        if (v === undefined) {
+            return false
+        }
+        if (v.well === false) {
+            return true
+        }
+        return false
+    })
 }

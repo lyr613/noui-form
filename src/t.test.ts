@@ -107,19 +107,9 @@ function data(): Data {
     }
 }
 
-describe('sum module', () => {
-    test('qqq', () => {
+describe('make', () => {
+    test('get & set', () => {
         const ctrl = noui.make(data)
-        // console.log('---')
-        // console.log(
-        //     'keys',
-        //     Object.getPrototypeOf(ctrl).now,
-        //     Object.getPrototypeOf(ctrl2).now,
-        //     Object.getPrototypeOf(ctrl).now === Object.getPrototypeOf(ctrl2).now,
-        //     ctrl.now(),
-        // )
-
-        // console.log('---')
 
         expect(ctrl.now().age).toEqual(data().age)
 
@@ -127,18 +117,13 @@ describe('sum module', () => {
             f.age = 99
         })
         expect(ctrl.now().age).toBe(99)
-        // ctrl.get$((f) => f.age)
-        //     .pipe(take(1))
-        //     .subscribe((val) => {
-        //         expect(val).toBe(99)
-        //     })
         ctrl.init()
         expect(ctrl.now().age).toBe(18)
 
         ctrl.get$((f) => {
             return f.age
         }).subscribe((f) => {
-            console.log(f)
+            expect(f).toBe(18)
         })
     })
 })
@@ -169,28 +154,33 @@ describe('check & report', () => {
             well: true,
         })
 
-        expect(ctrl.report(ctrl.paths.age)).toEqual({
-            note: 'age must > 18',
-            path: ctrl.paths.age,
-            well: true,
-        })
+        expect(ctrl.report()[ctrl.paths.age]).toEqual(undefined)
 
         ctrl.check_once$((f) => {
             return timer(2000).pipe(
                 map(() => {
                     return {
-                        note: 'age must > 18',
-                        path: ctrl.paths.age,
-                        well: true,
+                        [ctrl.paths.age]: {
+                            note: 'age must > 18',
+                            path: ctrl.paths.age,
+                            well: true,
+                        },
                     }
                 }),
             )
         }).subscribe((r) => {
-            expect(ctrl.report(ctrl.paths.age)).toEqual({
+            expect(ctrl.report()[ctrl.paths.age]).toEqual(undefined)
+        })
+        ctrl.set((f) => {
+            f.age = 17
+        })
+        ctrl.check((f) => {
+            return {
                 note: 'age must > 18',
                 path: ctrl.paths.age,
-                well: true,
-            })
+                well: f.age > 18,
+            }
         })
+        expect(ctrl.report_has_bad()).toBe(true)
     })
 })

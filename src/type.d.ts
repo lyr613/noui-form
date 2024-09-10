@@ -40,14 +40,21 @@ export interface CtrlProtoPart<Data extends Record<string, any> = {}> {
         },
     ): CheckResult
     check_once$(
-        checker: (data: Data) => Observable<CheckResult>,
+        checker: (data: Data) => Observable<Record<string, CheckResult | undefined>>,
         options?: {
             /** default true */
             update_report?: boolean
         },
-    ): Observable<CheckResult>
-    report(path: string): CheckResult | undefined
-    report$(path: string): Observable<CheckResult | undefined>
+    ): Observable<Record<string, CheckResult | undefined>>
+    report(options?: {
+        /** default true */
+        only_bad?: boolean
+    }): Record<string, CheckResult | undefined>
+    report$(options?: {
+        /** default true */
+        only_bad?: boolean
+    }): Observable<Record<string, CheckResult | undefined>>
+    report_has_bad(): boolean
 }
 
 export interface CheckResult {
