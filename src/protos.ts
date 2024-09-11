@@ -1,6 +1,6 @@
 import { produce } from 'immer'
-import { BehaviorSubject, map, Observable, take, tap } from 'rxjs'
-import { Ctrl, CtrlDev, CtrlDevPart, CtrlProtoPart, CtrlSelfPart, deep_path, CheckResult } from './type'
+import { map, Observable, take, tap } from 'rxjs'
+import { CheckResult, CtrlDev } from './type'
 
 export function _now<Data extends Record<string, any> = {}>(this: CtrlDev<Data>) {
     return this._value$.value
@@ -33,7 +33,7 @@ export function _get$<Data extends Record<string, any> = {}, T extends any = Dat
 }
 
 // #region check
-export function _check<Data extends Record<string, any> = {}>(
+export function _check_path<Data extends Record<string, any> = {}>(
     this: CtrlDev<Data>,
     checker: (data: Data) => CheckResult,
     options?: {
@@ -53,25 +53,30 @@ export function _check<Data extends Record<string, any> = {}>(
     return result
 }
 
-export function _check_once$<Data extends Record<string, any> = {}>(
+export function _check$<Data extends Record<string, any> = {}>(
     this: CtrlDev<Data>,
     checker: (data: Data) => Observable<Record<string, CheckResult | undefined>>,
     options?: {
         /** default true */
         update_report?: boolean
+        /** default true */
+        take1?: boolean
     },
 ): Observable<Record<string, CheckResult | undefined>> {
+    const take1 = options?.take1 ?? true
+    const update_report = options?.update_report ?? true
+    const null_tap = tap<Record<string, CheckResult | undefined>>(() => {})
     return checker(this._value$.value).pipe(
-        take(1),
-        tap((result) => {
-            if (options?.update_report ?? true) {
-                const now_report = this._report$.value
-                const next_report = produce(now_report, (draft) => {
-                    Object.assign(draft, result)
-                })
-                this._report$.next(next_report)
-            }
-        }),
+        take1 ? take(1) : null_tap,
+        update_report
+            ? tap((result) => {
+                  const now_report = this._report$.value
+                  const next_report = produce(now_report, (draft) => {
+                      Object.assign(draft, result)
+                  })
+                  this._report$.next(next_report)
+              })
+            : null_tap,
     )
 }
 

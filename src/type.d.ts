@@ -32,14 +32,14 @@ export interface CtrlProtoPart<Data extends Record<string, any> = {}> {
     get$<T extends any = Data>(getter: (data: Data) => T): Observable<T>
     /** 初始化值, 使用构建ctrl时的函数 */
     init(): void
-    check(
+    check_path(
         checker: (data: Data) => CheckResult,
         options?: {
             /** default true */
             update_report?: boolean
         },
     ): CheckResult
-    check_once$(
+    check$(
         checker: (data: Data) => Observable<Record<string, CheckResult | undefined>>,
         options?: {
             /** default true */
