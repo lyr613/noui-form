@@ -34,6 +34,7 @@
         "babel-jest": "^29",
         "ts-jest": "^29",
         "ts-node": "^10",
-        "tslib": "^2"
+        "tslib": "^2",
+        "webpack-cli": "^5"
     }
 }
