@@ -32,29 +32,39 @@ export interface CtrlProtoPart<Data extends Record<string, any> = {}> {
     get$<T extends any = Data>(getter: (data: Data) => T): Observable<T>
     /** 初始化值, 使用构建ctrl时的函数 */
     init(): void
-    check_path(
-        checker: (data: Data) => CheckResult,
-        options?: {
-            /** default true */
-            update_report?: boolean
-        },
-    ): CheckResult
+
+    /**
+     *
+     * @param make 创建一个检查函数, 返回一个可订阅检查结果, 可多次使用
+     * @param options
+     */
     check$(
-        checker: (data: Data) => Observable<Record<string, CheckResult | undefined>>,
+        make: (data: Data) => Observable<Record<string, CheckResult | undefined>>,
         options?: {
-            /** default true */
+            /**
+             * 更新报告, 设置true时, report$可以订阅到更新
+             * - default true
+             */
             update_report?: boolean
+            /**
+             * 仅吐出一次数据
+             * - default true
+             */
+            take_once?: boolean
         },
     ): Observable<Record<string, CheckResult | undefined>>
-    report(options?: {
-        /** default true */
-        only_bad?: boolean
-    }): Record<string, CheckResult | undefined>
-    report$(options?: {
-        /** default true */
-        only_bad?: boolean
-    }): Observable<Record<string, CheckResult | undefined>>
-    report_has_bad(): boolean
+    /**
+     * ## 仅需要报告中是否有错误
+     * ctrl.report$().pipe(noui.helper.report_has_bad)
+     *
+     * @param options
+     */
+    report$(options?: {}): Observable<Record<string, CheckResult | undefined>>
+}
+
+interface report_option_only_has_had {
+    /** 只报告是否有错误 */
+    only_has_had: true
 }
 
 export interface CheckResult {

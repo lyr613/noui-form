@@ -55,18 +55,18 @@ export function _check_path<Data extends Record<string, any> = {}>(
 
 export function _check$<Data extends Record<string, any> = {}>(
     this: CtrlDev<Data>,
-    checker: (data: Data) => Observable<Record<string, CheckResult | undefined>>,
+    make: (data: Data) => Observable<Record<string, CheckResult | undefined>>,
     options?: {
         /** default true */
         update_report?: boolean
         /** default true */
-        take1?: boolean
+        take_once?: boolean
     },
 ): Observable<Record<string, CheckResult | undefined>> {
-    const take1 = options?.take1 ?? true
+    const take1 = options?.take_once ?? true
     const update_report = options?.update_report ?? true
     const null_tap = tap<Record<string, CheckResult | undefined>>(() => {})
-    return checker(this._value$.value).pipe(
+    return make(this._value$.value).pipe(
         take1 ? take(1) : null_tap,
         update_report
             ? tap((result) => {

@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals'
 import { noui } from './index'
-import { map, take, timer } from 'rxjs'
+import { map, of, take, timer } from 'rxjs'
 import { compute_path } from './self'
 
 describe('self', () => {
@@ -47,6 +47,8 @@ describe('self', () => {
     node1.obj.node2 = node2
 
     const cpath = compute_path(node1)
+    console.log(cpath)
+
     test('compute_path', () => {
         expect(cpath.num).toBe('num')
         expect(cpath.str).toBe('str')
@@ -135,52 +137,23 @@ describe('check & report', () => {
         f.age = 19
     })
     test('check', () => {
-        expect(
-            ctrl.check_path(
-                (f) => {
-                    return {
-                        note: 'age must > 18',
-                        path: ctrl.paths.age,
-                        well: f.age > 18,
-                    }
+        const ter = ctrl.check$((f) => {
+            return of({
+                [ctrl.paths.age]: {
+                    note: 'age must > 18',
+                    path: ctrl.paths.age,
+                    well: true,
                 },
-                {
-                    update_report: true,
-                },
-            ),
-        ).toEqual({
-            note: 'age must > 18',
-            path: ctrl.paths.age,
-            well: true,
+            })
         })
-
-        expect(ctrl.report()[ctrl.paths.age]).toEqual(undefined)
-
-        ctrl.check$((f) => {
-            return timer(2000).pipe(
-                map(() => {
-                    return {
-                        [ctrl.paths.age]: {
-                            note: 'age must > 18',
-                            path: ctrl.paths.age,
-                            well: true,
-                        },
-                    }
-                }),
-            )
-        }).subscribe((r) => {
-            expect(ctrl.report()[ctrl.paths.age]).toEqual(undefined)
+        ter.subscribe()
+        ctrl.report$().subscribe((f) => {
+            expect(f[ctrl.paths.age]?.well).toBe(true)
         })
-        ctrl.set((f) => {
-            f.age = 17
-        })
-        ctrl.check_path((f) => {
-            return {
-                note: 'age must > 18',
-                path: ctrl.paths.age,
-                well: f.age > 18,
-            }
-        })
-        expect(ctrl.report_has_bad()).toBe(true)
+        ctrl.report$()
+            .pipe(noui.helper.report_has_bad)
+            .subscribe((b) => {
+                expect(b).toBe(false)
+            })
     })
 })

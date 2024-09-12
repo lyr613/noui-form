@@ -10,7 +10,6 @@ export function compute_path<Data extends Record<string, any> = {}>(value: Data)
     }))
     // 防止循环引用
     const check_graph = new Set()
-    check_graph.add(value)
     while (key_queue.length) {
         const cur = key_queue.shift()!
         const cur_from_value = cur.from[cur.key]
@@ -40,6 +39,7 @@ export function compute_path<Data extends Record<string, any> = {}>(value: Data)
                                 pre_key: cur_key,
                             })
                         })
+                        check_graph.add(cur_from_value)
                     }
                 }
 
