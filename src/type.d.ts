@@ -42,6 +42,11 @@ export interface CtrlProtoPart<Data extends Record<string, any> = {}> {
         make: (data: Data) => Observable<Record<string, CheckResult | undefined>>,
         options?: {
             /**
+             * 预初始化报告, 设置true时, report$会先初始化为 {}
+             * - default false
+             */
+            pre_init_report?: boolean
+            /**
              * 更新报告, 设置true时, report$可以订阅到更新
              * - default true
              */
@@ -54,17 +59,12 @@ export interface CtrlProtoPart<Data extends Record<string, any> = {}> {
         },
     ): Observable<Record<string, CheckResult | undefined>>
     /**
-     * ## 仅需要报告中是否有错误
-     * ctrl.report$().pipe(noui.helper.report_has_bad)
+     * ## 订阅检查结果
+     * - 仅需要报告中是否有错误 ctrl.report$().pipe(noui.helper.report_has_bad)
      *
      * @param options
      */
     report$(options?: {}): Observable<Record<string, CheckResult | undefined>>
-}
-
-interface report_option_only_has_had {
-    /** 只报告是否有错误 */
-    only_has_had: true
 }
 
 export interface CheckResult {

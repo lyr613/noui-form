@@ -1,9 +1,9 @@
 import { produce } from 'immer'
-import { BehaviorSubject, map, Observable } from 'rxjs'
-import type { Ctrl, CtrlDev, CtrlDevPart, CtrlProtoPart, CtrlSelfPart, deep_path } from './type'
+import { BehaviorSubject } from 'rxjs'
 import { _flag, _version } from './infor'
-import { _now, _get$, _init, _set, _check_path, _check$, _report, _report$, _report_has_bad } from './protos'
+import { _check$, _get$, _init, _now, _report$, _set } from './protos'
 import { compute_path } from './self'
+import type { Ctrl, CtrlDev, CtrlDevPart, CtrlProtoPart, CtrlSelfPart } from './type'
 
 export function make<Data extends Record<string, any> = {}>(original: () => Data): Ctrl<Data> {
     const value0 = produce(original(), () => {})

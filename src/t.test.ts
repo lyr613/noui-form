@@ -145,7 +145,9 @@ describe('check & report', () => {
             },
         })
     })
-    ter.subscribe()
+    ter.subscribe((r) => {
+        expect(r[ctrl.paths.age]?.well).toBe(true)
+    })
     test('check', () => {
         ctrl.report$().subscribe((f) => {
             expect(f[ctrl.paths.age]?.well).toBe(true)

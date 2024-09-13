@@ -57,17 +57,34 @@ export function _check$<Data extends Record<string, any> = {}>(
     this: CtrlDev<Data>,
     make: (data: Data) => Observable<Record<string, CheckResult | undefined>>,
     options?: {
-        /** default true */
+        /**
+         * 预初始化报告, 设置true时, report$会先初始化为 {}
+         * - default false
+         */
+        pre_init_report?: boolean
+        /**
+         * 更新报告, 设置true时, report$可以订阅到更新
+         * - default true
+         */
         update_report?: boolean
-        /** default true */
+        /**
+         * 仅吐出一次数据
+         * - default true
+         */
         take_once?: boolean
     },
 ): Observable<Record<string, CheckResult | undefined>> {
     const take1 = options?.take_once ?? true
     const update_report = options?.update_report ?? true
+    const pre_init_report = options?.pre_init_report ?? false
     const null_tap = tap<Record<string, CheckResult | undefined>>(() => {})
     return make(this._value$.value).pipe(
         take1 ? take(1) : null_tap,
+        pre_init_report
+            ? tap(() => {
+                  this._report$.next({})
+              })
+            : null_tap,
         update_report
             ? tap((result) => {
                   const now_report = this._report$.value
@@ -80,47 +97,6 @@ export function _check$<Data extends Record<string, any> = {}>(
     )
 }
 
-export function _report(
-    this: CtrlDev<{}>,
-    options?: {
-        /** default true */
-        only_bad?: boolean
-    },
-): Record<string, CheckResult | undefined> {
-    const only_bad = options?.only_bad ?? true
-    const report = this._report$.value
-    return filter_report_only_bad(report, only_bad)
-}
-
 export function _report$(this: CtrlDev<{}>, options?: {}): Observable<Record<string, CheckResult | undefined>> {
     return this._report$.pipe()
-}
-
-function filter_report_only_bad(
-    report: Record<string, CheckResult | undefined>,
-    only_bad: boolean,
-): Record<string, CheckResult | undefined> {
-    if (!only_bad) {
-        return report
-    }
-    return produce({}, (draft: Record<string, CheckResult | undefined>) => {
-        Object.keys(report).forEach((key) => {
-            const v = report[key]
-            if (v?.well === false) {
-                draft[key] = v
-            }
-        })
-    })
-}
-
-export function _report_has_bad(this: CtrlDev<{}>): boolean {
-    return Object.values(this._report$.value).some((v) => {
-        if (v === undefined) {
-            return false
-        }
-        if (v.well === false) {
-            return true
-        }
-        return false
-    })
 }
