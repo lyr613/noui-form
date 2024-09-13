@@ -5,8 +5,9 @@
     "type": "commonjs",
     "exports": {
         ".": {
-            "import": "./dist/mjs/index.js",
-            "require": "./dist/cjs/index.js"
+            "import": "./src/index.ts",
+            "require": "./dist/cjs/index.js",
+            "types": "./src/type.d.ts"
         }
     },
     "scripts": {

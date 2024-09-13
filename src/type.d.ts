@@ -39,7 +39,7 @@ export interface CtrlProtoPart<Data extends Record<string, any> = {}> {
      * @param options
      */
     check$(
-        make: (data: Data) => Observable<Record<string, CheckResult | undefined>>,
+        make: (data: Data) => Observable<CheckResult[]> | CheckResult[],
         options?: {
             /**
              * 预初始化报告, 设置true时, report$会先初始化为 {}
@@ -56,6 +56,15 @@ export interface CtrlProtoPart<Data extends Record<string, any> = {}> {
              * - default true
              */
             take_once?: boolean
+            /**
+             * 同路径如何合并结果
+             * - default 'some bad'
+             * - 'some bad' 有一个坏就坏
+             * - 'some well' 有一个好就好
+             * - 'use first' 优先使用第一个
+             * - 'use last' 优先使用最后一个
+             */
+            same_path_merge?: 'some bad' | 'some well' | 'use first' | 'use last'
         },
     ): Observable<Record<string, CheckResult | undefined>>
     /**

@@ -137,13 +137,13 @@ describe('check & report', () => {
         f.age = 19
     })
     const ter = ctrl.check$((f) => {
-        return of({
-            [ctrl.paths.age]: {
+        return [
+            {
                 note: 'age must > 18',
                 path: ctrl.paths.age,
                 well: true,
             },
-        })
+        ]
     })
     ter.subscribe((r) => {
         expect(r[ctrl.paths.age]?.well).toBe(true)

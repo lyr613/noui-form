@@ -1,5 +1,5 @@
 import { produce } from 'immer'
-import { map, Observable, take, tap } from 'rxjs'
+import { map, Observable, of, take, tap } from 'rxjs'
 import { CheckResult, CtrlDev } from './type'
 
 export function _now<Data extends Record<string, any> = {}>(this: CtrlDev<Data>) {
@@ -55,7 +55,7 @@ export function _check_path<Data extends Record<string, any> = {}>(
 
 export function _check$<Data extends Record<string, any> = {}>(
     this: CtrlDev<Data>,
-    make: (data: Data) => Observable<Record<string, CheckResult | undefined>>,
+    make: (data: Data) => Observable<CheckResult[]> | CheckResult[],
     options?: {
         /**
          * 预初始化报告, 设置true时, report$会先初始化为 {}
@@ -72,13 +72,33 @@ export function _check$<Data extends Record<string, any> = {}>(
          * - default true
          */
         take_once?: boolean
+        /**
+         * 同路径如何合并结果
+         * - default 'some bad'
+         * - 'some bad' 有一个坏就坏
+         * - 'some well' 有一个好就好
+         * - 'use first' 优先使用第一个
+         * - 'use last' 优先使用最后一个
+         */
+        same_path_merge?: 'some bad' | 'some well' | 'use first' | 'use last'
     },
 ): Observable<Record<string, CheckResult | undefined>> {
     const take1 = options?.take_once ?? true
     const update_report = options?.update_report ?? true
     const pre_init_report = options?.pre_init_report ?? false
     const null_tap = tap<Record<string, CheckResult | undefined>>(() => {})
-    return make(this._value$.value).pipe(
+    let publisher = make(this._value$.value)
+    if (Array.isArray(publisher)) {
+        publisher = of(publisher)
+    }
+    return publisher.pipe(
+        map((li) => {
+            const result: Record<string, CheckResult> = {}
+            for (const item of li) {
+                result[item.path] = item
+            }
+            return result
+        }),
         take1 ? take(1) : null_tap,
         pre_init_report
             ? tap(() => {
