@@ -10,7 +10,12 @@ export function compute_path<Data extends Record<string, any> = {}>(value: Data)
     }))
     // 防止循环引用
     const check_graph = new Set()
+    let limit_rest = 2000
     while (key_queue.length) {
+        limit_rest--
+        if (limit_rest <= 0) {
+            break
+        }
         const cur = key_queue.shift()!
         const cur_from_value = cur.from[cur.key]
         const cur_key = cur.pre_key ? cur.pre_key + '.' + cur.key : cur.key
