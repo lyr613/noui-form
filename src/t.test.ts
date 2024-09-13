@@ -136,17 +136,17 @@ describe('check & report', () => {
     ctrl.set((f) => {
         f.age = 19
     })
-    test('check', () => {
-        const ter = ctrl.check$((f) => {
-            return of({
-                [ctrl.paths.age]: {
-                    note: 'age must > 18',
-                    path: ctrl.paths.age,
-                    well: true,
-                },
-            })
+    const ter = ctrl.check$((f) => {
+        return of({
+            [ctrl.paths.age]: {
+                note: 'age must > 18',
+                path: ctrl.paths.age,
+                well: true,
+            },
         })
-        ter.subscribe()
+    })
+    ter.subscribe()
+    test('check', () => {
         ctrl.report$().subscribe((f) => {
             expect(f[ctrl.paths.age]?.well).toBe(true)
         })

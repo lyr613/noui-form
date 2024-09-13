@@ -92,19 +92,8 @@ export function _report(
     return filter_report_only_bad(report, only_bad)
 }
 
-export function _report$(
-    this: CtrlDev<{}>,
-    options?: {
-        /** default true */
-        only_bad?: boolean
-    },
-): Observable<Record<string, CheckResult | undefined>> {
-    return this._report$.pipe(
-        map((report) => {
-            const only_bad = options?.only_bad ?? true
-            return filter_report_only_bad(report, only_bad)
-        }),
-    )
+export function _report$(this: CtrlDev<{}>, options?: {}): Observable<Record<string, CheckResult | undefined>> {
+    return this._report$.pipe()
 }
 
 function filter_report_only_bad(
