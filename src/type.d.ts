@@ -39,7 +39,7 @@ export interface CtrlProtoPart<Data extends Record<string, any> = {}> {
      * @param options
      */
     check$(
-        make: (data: Data) => Observable<CheckResult[]> | CheckResult[],
+        make: (data: Data) => Observable<CheckResult[] | CheckResult> | CheckResult[] | CheckResult,
         options?: {
             /**
              * 预初始化报告, 设置true时, report$会先初始化为 {}
