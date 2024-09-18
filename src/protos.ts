@@ -55,7 +55,7 @@ export function _check_path<Data extends Record<string, any> = {}>(
 
 export function _check$<Data extends Record<string, any> = {}>(
     this: CtrlDev<Data>,
-    make: (data: Data) => Observable<CheckResult[]> | CheckResult[],
+    make: (data: Data) => Observable<CheckResult[] | CheckResult> | CheckResult[] | CheckResult,
     options?: {
         /**
          * 预初始化报告, 设置true时, report$会先初始化为 {}
@@ -86,35 +86,63 @@ export function _check$<Data extends Record<string, any> = {}>(
     const take1 = options?.take_once ?? true
     const update_report = options?.update_report ?? true
     const pre_init_report = options?.pre_init_report ?? false
-    const null_tap = tap<Record<string, CheckResult | undefined>>(() => {})
-    let publisher = make(this._value$.value)
-    if (Array.isArray(publisher)) {
-        publisher = of(publisher)
-    }
-    return publisher.pipe(
+
+    const maked = make(this._value$.value)
+    const publish_start = 'pipe' in maked ? maked : of(maked)
+    const publisher_li = publish_start.pipe(map((x) => (Array.isArray(x) ? x : [x])))
+    // 处理列表为对象
+    const publisher_kv = publisher_li.pipe(
         map((li) => {
             const result: Record<string, CheckResult> = {}
-            for (const item of li) {
-                result[item.path] = item
+            loop: for (const item of li) {
+                const pre = result[item.path]
+                if (!pre) {
+                    result[item.path] = item
+                } else {
+                    switch (options?.same_path_merge) {
+                        case 'use first':
+                            continue loop
+                            break
+                        case 'use last':
+                            result[item.path] = item
+                            break
+                        case 'some well':
+                            if (pre.well) {
+                                continue
+                            }
+                            break
+                        case 'some bad':
+                        default:
+                            if (!pre.well) {
+                                continue
+                            }
+                            break
+                    }
+                }
             }
             return result
         }),
-        take1 ? take(1) : null_tap,
-        pre_init_report
-            ? tap(() => {
-                  this._report$.next({})
-              })
-            : null_tap,
-        update_report
-            ? tap((result) => {
+    )
+    // 处理是否只吐出一次
+    const publisher_taked = take1 ? publisher_kv.pipe(take(1)) : publisher_kv
+    // 处理是否初始化报告
+    const publisher_pre_init = pre_init_report
+        ? publisher_taked.pipe(tap(() => this._report$.next({})))
+        : publisher_taked
+    // 处理是否更新报告
+    const publisher_report = update_report
+        ? publisher_pre_init.pipe(
+              tap((result) => {
                   const now_report = this._report$.value
                   const next_report = produce(now_report, (draft) => {
                       Object.assign(draft, result)
                   })
                   this._report$.next(next_report)
-              })
-            : null_tap,
-    )
+              }),
+          )
+        : publisher_pre_init
+
+    return publisher_report
 }
 
 export function _report$(this: CtrlDev<{}>, options?: {}): Observable<Record<string, CheckResult | undefined>> {
