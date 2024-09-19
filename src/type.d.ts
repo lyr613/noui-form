@@ -75,8 +75,8 @@ export interface CtrlProtoPart<Data extends Record<string, any> = {}> {
     init(): void
 
     /**
-     *
-     * @param make 创建一个检查函数, 返回一个可订阅检查结果, 可多次使用
+     * 通过参数make返回一个可订阅检查结果, 可多次订阅
+     * @param make 创建一个检查函数, 返回一个可订阅检查结果, 可多次订阅
      * @param options
      */
     check$(
