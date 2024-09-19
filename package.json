@@ -1,13 +1,13 @@
 {
     "name": "@lyr613/noui-form",
-    "version": "0.0.17",
+    "version": "0.0.18",
     "main": "dist/index.js",
     "type": "commonjs",
     "exports": {
         ".": {
-            "import": "./src/index.ts",
+            "import": "./dist/cjs/index.js",
             "require": "./dist/cjs/index.js",
-            "types": "./src/type.d.ts"
+            "types": "./dist/cjs/type.d.ts"
         }
     },
     "scripts": {
@@ -35,7 +35,6 @@
         "babel-jest": "^29",
         "ts-jest": "^29",
         "ts-node": "^10",
-        "tslib": "^2",
-        "webpack-cli": "^5"
+        "tslib": "^2"
     }
 }

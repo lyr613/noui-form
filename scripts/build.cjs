@@ -11,13 +11,11 @@ if (fs.existsSync(path.resolve(root_dir, 'dist'))) {
 
 // 执行tsc编译
 cp.execSync('npx tsc  --project tsconfig.cjs.json', { stdio: 'inherit' })
-cp.execSync('npx tsc  --project tsconfig.mjs.json', { stdio: 'inherit' })
 
 // 复制 d.ts 文件
 const files = fs.readdirSync(path.resolve(root_dir, 'src'))
 files.forEach((file) => {
     if (file.endsWith('.d.ts')) {
-        fs.copyFileSync(path.resolve(root_dir, 'src', file), path.resolve(root_dir, 'dist', 'mjs', file))
         fs.copyFileSync(path.resolve(root_dir, 'src', file), path.resolve(root_dir, 'dist', 'cjs', file))
     }
 })
