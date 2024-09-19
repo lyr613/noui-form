@@ -1,6 +1,12 @@
 import { produce } from 'immer'
 import { map, Observable, of, take, tap } from 'rxjs'
-import { CheckResult, CtrlDev } from './type'
+import {
+    CheckResult,
+    CtrlDev,
+    ctrl_proto_check_param_make,
+    ctrl_proto_check_param_options,
+    ctrl_proto_check_return,
+} from './type'
 
 export function _now<Data extends Record<string, any> = {}>(this: CtrlDev<Data>) {
     return this._value$.value
@@ -55,34 +61,9 @@ export function _check_path<Data extends Record<string, any> = {}>(
 
 export function _check$<Data extends Record<string, any> = {}>(
     this: CtrlDev<Data>,
-    make: (data: Data) => Observable<CheckResult[] | CheckResult> | CheckResult[] | CheckResult,
-    options?: {
-        /**
-         * 预初始化报告, 设置true时, report$会先初始化为 {}
-         * - default false
-         */
-        pre_init_report?: boolean
-        /**
-         * 更新报告, 设置true时, report$可以订阅到更新
-         * - default true
-         */
-        update_report?: boolean
-        /**
-         * 仅吐出一次数据
-         * - default true
-         */
-        take_once?: boolean
-        /**
-         * 同路径如何合并结果
-         * - default 'some bad'
-         * - 'some bad' 有一个坏就坏
-         * - 'some well' 有一个好就好
-         * - 'use first' 优先使用第一个
-         * - 'use last' 优先使用最后一个
-         */
-        same_path_merge?: 'some bad' | 'some well' | 'use first' | 'use last'
-    },
-): Observable<Record<string, CheckResult | undefined>> {
+    make: ctrl_proto_check_param_make<Data>,
+    options?: ctrl_proto_check_param_options<Data>,
+): ctrl_proto_check_return<Data> {
     const take1 = options?.take_once ?? true
     const update_report = options?.update_report ?? true
     const pre_init_report = options?.pre_init_report ?? false
@@ -145,6 +126,6 @@ export function _check$<Data extends Record<string, any> = {}>(
     return publisher_report
 }
 
-export function _report$(this: CtrlDev<{}>, options?: {}): Observable<Record<string, CheckResult | undefined>> {
+export function _report$(this: CtrlDev<{}>): Observable<Record<string, CheckResult | undefined>> {
     return this._report$.pipe()
 }

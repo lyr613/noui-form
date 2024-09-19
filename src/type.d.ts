@@ -1,11 +1,52 @@
 import { BehaviorSubject, Observable } from 'rxjs'
 
+// #region ctrl func
+export type ctrl_proto_check_param_make<Data extends Record<string, any> = {}> = (
+    data: Data,
+) => Observable<CheckResult[] | CheckResult> | CheckResult[] | CheckResult
+export type ctrl_proto_check_param_options<Data extends Record<string, any> = {}> = {
+    /**
+     * 预初始化报告, 设置true时, report$会先初始化为 {}
+     * - default false
+     */
+    pre_init_report?: boolean
+    /**
+     * 更新报告, 设置true时, report$可以订阅到更新
+     * - default true
+     */
+    update_report?: boolean
+    /**
+     * 仅吐出一次数据
+     * - default true
+     */
+    take_once?: boolean
+    /**
+     * 同路径如何合并结果
+     * - default 'some bad'
+     * - 'some bad' 有一个坏就坏
+     * - 'some well' 有一个好就好
+     * - 'use first' 优先使用第一个
+     * - 'use last' 优先使用最后一个
+     */
+    same_path_merge?: 'some bad' | 'some well' | 'use first' | 'use last'
+}
+export type ctrl_proto_check_return<Data extends Record<string, any> = {}> = Observable<
+    Record<string, CheckResult | undefined>
+>
+
+// #region ctrl
+
 export interface Ctrl<Data extends Record<string, any> = {}> extends CtrlProtoPart<Data>, CtrlSelfPart<Data> {}
+
+/** 开发库内部使用 */
+export interface CtrlDev<Data extends Record<string, any> = {}> extends Ctrl<Data>, CtrlDevPart<Data> {}
+
+// #region ctrl part
 
 /** 每个ctrl自己持有 */
 export interface CtrlSelfPart<Data extends Record<string, any> = {}> {
     /**
-     * ## 所有路径
+     * ## 路径树
      * 仅处理基本类型(number, string, boolean, null, undefined)和kv的object对象
      * - e. g. {a: 1, b: {c: 2}} => {a: 'a', b: {c: 'b.c'}}
      */
@@ -39,41 +80,16 @@ export interface CtrlProtoPart<Data extends Record<string, any> = {}> {
      * @param options
      */
     check$(
-        make: (data: Data) => Observable<CheckResult[] | CheckResult> | CheckResult[] | CheckResult,
-        options?: {
-            /**
-             * 预初始化报告, 设置true时, report$会先初始化为 {}
-             * - default false
-             */
-            pre_init_report?: boolean
-            /**
-             * 更新报告, 设置true时, report$可以订阅到更新
-             * - default true
-             */
-            update_report?: boolean
-            /**
-             * 仅吐出一次数据
-             * - default true
-             */
-            take_once?: boolean
-            /**
-             * 同路径如何合并结果
-             * - default 'some bad'
-             * - 'some bad' 有一个坏就坏
-             * - 'some well' 有一个好就好
-             * - 'use first' 优先使用第一个
-             * - 'use last' 优先使用最后一个
-             */
-            same_path_merge?: 'some bad' | 'some well' | 'use first' | 'use last'
-        },
-    ): Observable<Record<string, CheckResult | undefined>>
+        make: ctrl_proto_check_param_make<Data>,
+        options?: ctrl_proto_check_param_options<Data>,
+    ): ctrl_proto_check_return<Data>
     /**
      * ## 订阅检查结果
      * - 仅需要报告中是否有错误 ctrl.report$().pipe(noui.helper.report_has_bad)
      *
      * @param options
      */
-    report$(options?: {}): Observable<Record<string, CheckResult | undefined>>
+    report$(): Observable<Record<string, CheckResult | undefined>>
 }
 
 export interface CheckResult {
@@ -89,10 +105,8 @@ export interface CtrlDevPart<Data extends Record<string, any> = {}> {
     _value$: BehaviorSubject<Data>
     _report$: BehaviorSubject<Record<string, CheckResult | undefined>>
 }
-/** 开发库内部使用 */
-export interface CtrlDev<Data extends Record<string, any> = {}> extends Ctrl<Data>, CtrlDevPart<Data> {}
 
-// compute keys
+// #region compute keys
 type filter_never<T> = {
     [K in keyof T as T[K] extends never ? never : K]: T[K] extends Record<string, any> ? filter_never<T[K]> : T[K]
 }
