@@ -1,6 +1,6 @@
 {
     "name": "@lyr613/noui-form",
-    "version": "0.0.19",
+    "version": "0.0.20",
     "main": "dist/index.js",
     "type": "commonjs",
     "exports": {
@@ -20,11 +20,12 @@
     "author": "lyr613",
     "license": "ISC",
     "description": "",
-    "dependencies": {},
-    "devDependencies": {
+    "dependencies": {
         "immer": "^10",
+        "rxjs": "^7"
+    },
+    "devDependencies": {
         "jest": "^29",
-        "rxjs": "^7",
         "typescript": "^5",
         "@babel/core": "^7",
         "@babel/preset-env": "^7",
