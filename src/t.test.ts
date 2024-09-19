@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals'
-import { noui } from './index'
+import * as noui from './index'
 import { map, of, take, timer } from 'rxjs'
 import { compute_path } from './self'
 
@@ -153,7 +153,7 @@ describe('check & report', () => {
             expect(f[ctrl.paths.age]?.well).toBe(true)
         })
         ctrl.report$()
-            .pipe(noui.helper.report_has_bad)
+            .pipe(noui.helper.pipe_report_has_bad)
             .subscribe((b) => {
                 expect(b).toBe(false)
             })

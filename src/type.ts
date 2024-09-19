@@ -85,7 +85,7 @@ export interface CtrlProtoPart<Data extends Record<string, any> = {}> {
     ): ctrl_proto_check_return<Data>
     /**
      * ## 订阅检查结果
-     * - 仅需要报告中是否有错误 ctrl.report$().pipe(noui.helper.report_has_bad)
+     * - 仅需要报告中是否有错误 ctrl.report$().pipe(noui.helper.pipe_report_has_bad)
      *
      * @param options
      */

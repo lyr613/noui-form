@@ -1,13 +1,16 @@
 {
     "name": "@lyr613/noui-form",
-    "version": "0.0.20",
-    "main": "dist/index.js",
+    "version": "0.0.21",
+    "main": "dist/cjs/index.js",
+    "module": "./dist/esm/index.js",
+    "types": "index.d.ts",
     "type": "commonjs",
     "exports": {
         ".": {
-            "import": "./dist/cjs/index.js",
+            "import": "./dist/esm/index.js",
             "require": "./dist/cjs/index.js",
-            "types": "./dist/cjs/type.d.ts"
+            "node": "./dist/cjs/index.js",
+            "types": "./dist/types/index.d.ts"
         }
     },
     "scripts": {

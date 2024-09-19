@@ -1,9 +1,8 @@
 {
     "extends": "./tsconfig.json",
     "compilerOptions": {
-        "module": "CommonJS",
+        "module": "esnext",
         "target": "ES2022",
-        "downlevelIteration": true,
-        "outDir": "./dist/cjs"
+        "outDir": "./dist/esm"
     }
 }
