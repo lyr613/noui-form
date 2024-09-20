@@ -1,13 +1,13 @@
 {
     "name": "@lyr613/noui-form",
-    "version": "0.0.24",
+    "version": "0.0.25",
     "main": "./dist/cjs/index.js",
     "module": "./dist/esm/index.js",
     "types": "index.d.ts",
     "typesVersions": {
         ">=0.0.2": {
             "*": [
-                "dist/types/*"
+                "dist/types/src/*"
             ]
         }
     },
@@ -15,7 +15,7 @@
         ".": {
             "require": "./dist/cjs/index.js",
             "node": "./dist/cjs/index.js",
-            "types": "./dist/types/index.d.ts",
+            "types": "./dist/types/src/index.d.ts",
             "default": "./dist/esm/index.js"
         }
     },
