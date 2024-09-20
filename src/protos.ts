@@ -19,6 +19,7 @@ export function _init<Data extends Record<string, any> = {}>(this: CtrlDev<Data>
     return this._value$.next(value0)
 }
 
+// #region get set
 export function _set<Data extends Record<string, any> = {}>(this: CtrlDev<Data>, setter: (val: Data) => void) {
     const val$ = this._value$
     const next = produce(val$.value, setter)

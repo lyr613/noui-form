@@ -5,6 +5,10 @@ import { _check$, _get$, _init, _now, _report, _report$, _set } from './protos'
 import { compute_path } from './self'
 import type { Ctrl, CtrlDev, CtrlDevPart, CtrlProtoPart, CtrlSelfPart } from './type'
 
+/**
+ * 创建一个表单
+ * @param original 函数, 返回表单的初始值
+ */
 export function make_form<Data extends Record<string, any> = {}>(original: () => Data): Ctrl<Data> {
     const value0 = produce(original(), () => {})
     const value$ = new BehaviorSubject(value0)

@@ -1,6 +1,14 @@
 import { map } from 'rxjs'
 import type { CheckResult } from './type'
 
+export function build_check_result(path: string, well: boolean, note?: string): CheckResult {
+    return {
+        well,
+        path,
+        note: note || '',
+    }
+}
+
 /**
  * 管道map, 报告中是否有坏结果
  * @see pipe_report_all_well 和pipe_report_all_well的值相反
