@@ -2,6 +2,7 @@ import { describe, expect, test } from '@jest/globals'
 import * as noui from './index'
 import { map, of, take, timer } from 'rxjs'
 import { compute_path } from './self'
+jest.useFakeTimers()
 
 describe('self', () => {
     interface Node1 {
@@ -47,7 +48,6 @@ describe('self', () => {
     node1.obj.node2 = node2
 
     const cpath = compute_path(node1)
-    console.log(cpath)
 
     test('compute_path', () => {
         expect(cpath.num).toBe('num')
@@ -111,7 +111,7 @@ function data(): Data {
 
 describe('make', () => {
     test('get & set', () => {
-        const ctrl = noui.make(data)
+        const ctrl = noui.make_form(data)
 
         expect(ctrl.now().age).toEqual(data().age)
 
@@ -132,30 +132,64 @@ describe('make', () => {
 
 // #region check
 describe('check & report', () => {
-    const ctrl = noui.make(data)
-    ctrl.set((f) => {
-        f.age = 19
-    })
-    const ter = ctrl.check$((f) => {
+    const ctrl = noui.make_form(data)
+
+    const checker$ = ctrl.check$((f) => {
         return [
             {
                 note: 'age must > 18',
                 path: ctrl.paths.age,
-                well: true,
+                well: f.age > 18,
             },
         ]
-    })
-    ter.subscribe((r) => {
-        expect(r[ctrl.paths.age]?.well).toBe(true)
-    })
-    test('check', () => {
-        ctrl.report$().subscribe((f) => {
-            expect(f[ctrl.paths.age]?.well).toBe(true)
+    }, {})
+    test('check well', () => {
+        ctrl.set((f) => {
+            f.age = 19
+        })
+        checker$.subscribe((r) => {
+            expect(r[ctrl.paths.age]?.well).toBe(true)
         })
         ctrl.report$()
-            .pipe(noui.helper.pipe_report_has_bad)
-            .subscribe((b) => {
-                expect(b).toBe(false)
+            .pipe(take(1))
+            .subscribe((f) => {
+                expect(f[ctrl.paths.age]?.well).toBe(true)
             })
+        ctrl.report$()
+            .pipe(noui.pipe_report_all_well, take(1))
+            .subscribe((b) => {
+                expect(b).toBe(true)
+            })
+        const all_well = ctrl.report({
+            only_report_all_well: true,
+        })
+        expect(all_well).toBe(true)
+    })
+    test('check bad', () => {
+        ctrl.set((f) => {
+            f.age = 17
+        })
+        checker$.subscribe({
+            next(value) {},
+        })
+
+        const all_well = ctrl.report({})
+
+        expect(all_well).toBe(false)
+    })
+    test('check delay', () => {
+        const checker$ = ctrl.check$((f) => {
+            return timer(2000).pipe(
+                map(() => ({
+                    note: 'age must > 18',
+                    path: ctrl.paths.age,
+                    well: false,
+                })),
+            )
+        })
+        checker$.subscribe((r) => {
+            expect(r[ctrl.paths.age]?.well).toBe(false)
+        })
+        jest.advanceTimersByTime(3000)
     })
 })

@@ -1,11 +1,11 @@
 import { produce } from 'immer'
 import { BehaviorSubject } from 'rxjs'
 import { _flag, _version } from './infor'
-import { _check$, _get$, _init, _now, _report$, _set } from './protos'
+import { _check$, _get$, _init, _now, _report, _report$, _set } from './protos'
 import { compute_path } from './self'
 import type { Ctrl, CtrlDev, CtrlDevPart, CtrlProtoPart, CtrlSelfPart } from './type'
 
-export function make<Data extends Record<string, any> = {}>(original: () => Data): Ctrl<Data> {
+export function make_form<Data extends Record<string, any> = {}>(original: () => Data): Ctrl<Data> {
     const value0 = produce(original(), () => {})
     const value$ = new BehaviorSubject(value0)
     const self_part: CtrlSelfPart<Data> = {
@@ -30,6 +30,7 @@ export function make<Data extends Record<string, any> = {}>(original: () => Data
         init: _init,
         check$: _check$,
         report$: _report$,
+        report: _report,
     }
     Object.setPrototypeOf(_dev, proto_part)
 

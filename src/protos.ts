@@ -1,11 +1,13 @@
 import { produce } from 'immer'
-import { map, Observable, of, take, tap } from 'rxjs'
+import { map, Observable, of, switchMap, take, tap } from 'rxjs'
 import {
     CheckResult,
     CtrlDev,
     ctrl_proto_check_param_make,
     ctrl_proto_check_param_options,
     ctrl_proto_check_return,
+    ctrl_proto_report_param_options,
+    ctrl_proto_report_return,
 } from './type'
 
 export function _now<Data extends Record<string, any> = {}>(this: CtrlDev<Data>) {
@@ -68,9 +70,19 @@ export function _check$<Data extends Record<string, any> = {}>(
     const update_report = options?.update_report ?? true
     const pre_init_report = options?.pre_init_report ?? false
 
-    const maked = make(this._value$.value)
-    const publish_start = 'pipe' in maked ? maked : of(maked)
-    const publisher_li = publish_start.pipe(map((x) => (Array.isArray(x) ? x : [x])))
+    const start = of(null)
+
+    const publisher_li = start.pipe(
+        switchMap(() => {
+            const maked = make(this._value$.value)
+            if ('pipe' in maked) {
+                return maked
+            }
+            return of(maked)
+        }),
+        map((x) => (Array.isArray(x) ? x : [x])),
+    )
+
     // 处理列表为对象
     const publisher_kv = publisher_li.pipe(
         map((li) => {
@@ -126,6 +138,24 @@ export function _check$<Data extends Record<string, any> = {}>(
     return publisher_report
 }
 
+// #region report
 export function _report$(this: CtrlDev<{}>): Observable<Record<string, CheckResult | undefined>> {
     return this._report$.pipe()
+}
+
+export function _report<ORAW extends boolean | undefined>(
+    this: CtrlDev<{}>,
+    options?: ctrl_proto_report_param_options<ORAW>,
+): ctrl_proto_report_return<ORAW> {
+    const only_report_all_well = options?.only_report_all_well ?? true
+    const report = this._report$.value
+    if (only_report_all_well) {
+        return Object.values(report).every((x) => {
+            if (!x) {
+                return true
+            }
+            return x.well
+        }) as ctrl_proto_report_return<ORAW>
+    }
+    return report as ctrl_proto_report_return<ORAW>
 }

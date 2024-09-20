@@ -1,3 +1,3 @@
-export { make } from './make'
-export * as helper from './helper'
+export { make_form } from './make'
+export * from './helper'
 export type * from './type'

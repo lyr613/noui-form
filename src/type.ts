@@ -33,6 +33,15 @@ export type ctrl_proto_check_param_options<Data extends Record<string, any> = {}
 export type ctrl_proto_check_return<Data extends Record<string, any> = {}> = Observable<
     Record<string, CheckResult | undefined>
 >
+export type ctrl_proto_report_param_options<ORAW extends boolean | undefined> = {
+    /** 仅报告是否所有结果都正确
+     * - default true
+     */
+    only_report_all_well?: ORAW
+}
+export type ctrl_proto_report_return<ORAW extends boolean | undefined> = ORAW extends false
+    ? Record<string, CheckResult | undefined>
+    : boolean
 
 // #region ctrl
 
@@ -90,6 +99,9 @@ export interface CtrlProtoPart<Data extends Record<string, any> = {}> {
      * @param options
      */
     report$(): Observable<Record<string, CheckResult | undefined>>
+    report<ORAW extends boolean | undefined>(
+        options?: ctrl_proto_report_param_options<ORAW>,
+    ): ctrl_proto_report_return<ORAW>
 }
 
 export interface CheckResult {
