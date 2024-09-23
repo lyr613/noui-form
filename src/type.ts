@@ -99,6 +99,10 @@ export interface CtrlProtoPart<Data extends Record<string, any> = {}> {
      * @param options
      */
     report$(): Observable<Record<string, CheckResult | undefined>>
+    /**
+     * 当前报告
+     * - 如果未设置参数, 将返回一个boolean, 表示是否所有结果都正确
+     */
     report<ORAW extends boolean | undefined>(
         options?: ctrl_proto_report_param_options<ORAW>,
     ): ctrl_proto_report_return<ORAW>
@@ -118,6 +122,7 @@ export interface CtrlHelper {
      * @see pipe_report_has_bad 和pipe_report_has_bad的值相反
      */
     pipe_report_all_well: OperatorFunction<Record<string, CheckResult | undefined>, boolean>
+    pipe_report_path(path: string): OperatorFunction<Record<string, CheckResult | undefined>, CheckResult>
 }
 
 export interface CheckResult {

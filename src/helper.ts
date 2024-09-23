@@ -35,8 +35,14 @@ export const pipe_report_all_well = map<Record<string, CheckResult | undefined>,
     })
 })
 
+export const pipe_report_path = (path: string) =>
+    map<Record<string, CheckResult | undefined>, CheckResult>((report) => {
+        return report[path] || build_check_result(path, true)
+    })
+
 export const _helper = {
     build_check_result,
     pipe_report_has_bad,
     pipe_report_all_well,
+    pipe_report_path,
 }

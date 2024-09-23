@@ -228,4 +228,17 @@ describe('helper', () => {
                 expect(b).toBe(true)
             })
     })
+    test('pipe_report_path', () => {
+        const ctrl = noui.make_form(data)
+        const checker$ = ctrl.check$((f) => {
+            return ctrl.helper.build_check_result(ctrl.paths.age, true)
+        })
+        checker$.subscribe()
+        ctrl.report$()
+            .pipe(ctrl.helper.pipe_report_path(ctrl.paths.age))
+            .subscribe((r) => {
+                expect(r.well).toBe(true)
+            })
+        ctrl.report()
+    })
 })
