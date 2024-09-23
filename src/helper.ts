@@ -34,3 +34,9 @@ export const pipe_report_all_well = map<Record<string, CheckResult | undefined>,
         return v.well
     })
 })
+
+export const _helper = {
+    build_check_result,
+    pipe_report_has_bad,
+    pipe_report_all_well,
+}

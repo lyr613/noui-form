@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable } from 'rxjs'
+import { BehaviorSubject, Observable, OperatorFunction } from 'rxjs'
 
 // #region ctrl func
 export type ctrl_proto_check_param_make<Data extends Record<string, any> = {}> = (
@@ -102,6 +102,22 @@ export interface CtrlProtoPart<Data extends Record<string, any> = {}> {
     report<ORAW extends boolean | undefined>(
         options?: ctrl_proto_report_param_options<ORAW>,
     ): ctrl_proto_report_return<ORAW>
+    /** 辅助方法 */
+    helper: CtrlHelper
+}
+
+export interface CtrlHelper {
+    build_check_result(path: string, well: boolean, note?: string): CheckResult
+    /**
+     * 管道map, 报告中是否有坏结果
+     * @see pipe_report_all_well 和pipe_report_all_well的值相反
+     */
+    pipe_report_has_bad: OperatorFunction<Record<string, CheckResult | undefined>, boolean>
+    /**
+     * 管道map, 报告中是否所有结果都正确
+     * @see pipe_report_has_bad 和pipe_report_has_bad的值相反
+     */
+    pipe_report_all_well: OperatorFunction<Record<string, CheckResult | undefined>, boolean>
 }
 
 export interface CheckResult {

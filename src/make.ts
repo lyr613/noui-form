@@ -4,6 +4,7 @@ import { _flag, _version } from './infor'
 import { _check$, _get$, _init, _now, _report, _report$, _set } from './protos'
 import { compute_path } from './self'
 import type { Ctrl, CtrlDev, CtrlDevPart, CtrlProtoPart, CtrlSelfPart } from './type'
+import { _helper } from './helper'
 
 /**
  * 创建一个表单
@@ -35,6 +36,7 @@ export function make_form<Data extends Record<string, any> = {}>(original: () =>
         check$: _check$,
         report$: _report$,
         report: _report,
+        helper: _helper,
     }
     Object.setPrototypeOf(_dev, proto_part)
 
