@@ -156,7 +156,7 @@ describe('check & report', () => {
                 expect(f[ctrl.paths.age]?.well).toBe(true)
             })
         ctrl.report$()
-            .pipe(noui.pipe_report_all_well, take(1))
+            .pipe(ctrl.helper.pipe_report_all_well, take(1))
             .subscribe((b) => {
                 expect(b).toBe(true)
             })
@@ -191,5 +191,41 @@ describe('check & report', () => {
             expect(r[ctrl.paths.age]?.well).toBe(false)
         })
         jest.advanceTimersByTime(3000)
+    })
+})
+
+// #region helper
+describe('helper', () => {
+    test('buil check result', () => {
+        const ctrl = noui.make_form(data)
+
+        const result = ctrl.helper.build_check_result('a', true)
+        expect(result.path).toBe('a')
+        expect(result.well).toBe(true)
+        expect(result.note).toBe('')
+    })
+    test('pipe_report_has_bad', () => {
+        const ctrl = noui.make_form(data)
+        const checker$ = ctrl.check$((f) => {
+            return ctrl.helper.build_check_result(ctrl.paths.age, false, 'always bad')
+        })
+        checker$.subscribe()
+        ctrl.report$()
+            .pipe(ctrl.helper.pipe_report_has_bad)
+            .subscribe((b) => {
+                expect(b).toBe(true)
+            })
+    })
+    test('pipe_report_all_well', () => {
+        const ctrl = noui.make_form(data)
+        const checker$ = ctrl.check$((f) => {
+            return ctrl.helper.build_check_result(ctrl.paths.age, true)
+        })
+        checker$.subscribe()
+        ctrl.report$()
+            .pipe(ctrl.helper.pipe_report_all_well)
+            .subscribe((b) => {
+                expect(b).toBe(true)
+            })
     })
 })
