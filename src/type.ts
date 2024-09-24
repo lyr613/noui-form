@@ -7,7 +7,7 @@ export type ctrl_proto_check_param_make<Data extends Record<string, any> = {}> =
 export type ctrl_proto_check_param_options<Data extends Record<string, any> = {}> = {
     /**
      * 预初始化报告, 设置true时, report$会先初始化为 {}
-     * - default false
+     * - default true
      */
     pre_init_report?: boolean
     /**

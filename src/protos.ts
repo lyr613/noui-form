@@ -69,7 +69,7 @@ export function _check$<Data extends Record<string, any> = {}>(
 ): ctrl_proto_check_return<Data> {
     const take1 = options?.take_once ?? true
     const update_report = options?.update_report ?? true
-    const pre_init_report = options?.pre_init_report ?? false
+    const pre_init_report = options?.pre_init_report ?? true
 
     const start = of(null)
 
