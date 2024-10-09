@@ -31,6 +31,8 @@ export function compute_path<Data extends Record<string, any> = {}>(value: Data)
             case 'object':
                 if (cur_from_value === null) {
                     cur.to[cur.key] = cur_key
+                } else if (Array.isArray(cur_from_value)) {
+                    cur.to[cur.key] = cur_key
                 } else if (Object.prototype.toString.call(cur_from_value).toLowerCase() === '[object object]') {
                     cur.to[cur.key] = {}
 
