@@ -123,6 +123,7 @@ export interface CtrlHelper {
      */
     pipe_report_all_well: OperatorFunction<Record<string, CheckResult | undefined>, boolean>
     pipe_report_path(path: string): OperatorFunction<Record<string, CheckResult | undefined>, CheckResult>
+    clear_path_report(ctrl: Ctrl<any>, path: string): void
 }
 
 export interface CheckResult {
@@ -147,7 +148,7 @@ type deep_path_step1<KV extends Record<string, any>> = {
     [K in keyof KV & string]: KV[K] extends number | string | boolean | null | undefined
         ? string
         : KV[K] extends any[]
-        ? never
+        ? string
         : KV[K] extends Record<string, any>
         ? deep_path_step1<KV[K]>
         : never

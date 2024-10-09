@@ -1,5 +1,5 @@
 import { map } from 'rxjs'
-import type { CheckResult } from './type'
+import type { CheckResult, Ctrl } from './type'
 
 export function build_check_result(path: string, well: boolean, note?: string): CheckResult {
     return {
@@ -40,9 +40,21 @@ export const pipe_report_path = (path: string) =>
         return report[path] || build_check_result(path, true)
     })
 
+export const clear_path_report = (ctrl: Ctrl<any>, path: string) => {
+    ctrl.check$(
+        () => {
+            return build_check_result(path, true)
+        },
+        {
+            pre_init_report: false,
+        },
+    ).subscribe()
+}
+
 export const _helper = {
     build_check_result,
     pipe_report_has_bad,
     pipe_report_all_well,
     pipe_report_path,
+    clear_path_report,
 }
