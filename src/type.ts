@@ -151,6 +151,6 @@ type deep_path_step1<KV extends Record<string, any>> = {
         ? string
         : KV[K] extends Record<string, any>
         ? deep_path_step1<KV[K]>
-        : never
+        : string
 }
 export type deep_path<KV extends Record<string, any>> = filter_never<deep_path_step1<KV>>

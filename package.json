@@ -1,6 +1,6 @@
 {
     "name": "@lyr613/noui-form",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "main": "./dist/cjs/index.js",
     "module": "./dist/esm/index.js",
     "types": "index.d.ts",
@@ -27,6 +27,10 @@
     "keywords": [
         "form"
     ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/lyr613/noui-form"
+    },
     "author": "lyr613",
     "license": "ISC",
     "description": "",
