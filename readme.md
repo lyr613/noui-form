@@ -78,3 +78,23 @@ ctrl.report$().subscribe((r) => {
 })
 // 通过订阅对象可以获取到当前的检查结果, 并且在值发生变化时会触发回调
 ```
+
+## 必填
+
+```typescript
+ctrl.required(ctrl.paths.id, true) // void 设置id为必填
+ctrl.required(ctrl.paths.id) // true 获取id是否必填
+ctrl.required$(ctrl.paths.id).subscribe((r) => {
+    console.log(r)
+}) // 订阅id是否必填
+```
+
+## 禁用
+
+```typescript
+ctrl.disabled(ctrl.paths.id, true) // void 禁用id
+ctrl.disabled(ctrl.paths.id) // true 获取id是否禁用
+ctrl.disabled$(ctrl.paths.id).subscribe((r) => {
+    console.log(r)
+}) // 订阅id是否禁用
+```

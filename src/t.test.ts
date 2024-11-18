@@ -257,3 +257,18 @@ describe('require', () => {
         })
     })
 })
+
+// #region disable
+describe('disable', () => {
+    test('disable', () => {
+        const ctrl = noui.make_form(data)
+        const b0 = ctrl.disabled(ctrl.paths.other.qqq)
+        expect(b0).toBe(false)
+        ctrl.disabled(ctrl.paths.other.qqq, true)
+        const b1 = ctrl.disabled(ctrl.paths.other.qqq)
+        expect(b1).toBe(true)
+        ctrl.disabled$(ctrl.paths.other.qqq).subscribe((b) => {
+            expect(b).toBe(true)
+        })
+    })
+})
