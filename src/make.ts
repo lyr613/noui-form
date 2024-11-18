@@ -1,11 +1,23 @@
-import { produce } from 'immer'
+import { produce, enableMapSet } from 'immer'
 import { BehaviorSubject } from 'rxjs'
 import { _flag, _version } from './infor'
-import { _check$, _get$, _init, _now, _report, _report$, _set } from './protos'
+import {
+    _check$,
+    _get$,
+    _init,
+    _now,
+    _report,
+    _report$,
+    _set,
+    _require,
+    _require$,
+    _disable,
+    _disable$,
+} from './protos'
 import { compute_path } from './self'
 import type { Ctrl, CtrlDev, CtrlDevPart, CtrlProtoPart, CtrlSelfPart } from './type'
 import { _helper } from './helper'
-
+enableMapSet()
 /**
  * 创建一个表单
  * @param original 函数, 返回表单的初始值
@@ -22,6 +34,8 @@ export function make_form<Data extends Record<string, any> = {}>(original: () =>
         _report$: new BehaviorSubject(produce({}, () => {})),
         _flag: _flag,
         _version,
+        _requires$: new BehaviorSubject(new Map()),
+        _disables$: new BehaviorSubject(new Map()),
     }
     const _dev = {
         ...self_part,
@@ -37,6 +51,10 @@ export function make_form<Data extends Record<string, any> = {}>(original: () =>
         report$: _report$,
         report: _report,
         helper: _helper,
+        required: _require,
+        required$: _require$,
+        disabled: _disable,
+        disabled$: _disable$,
     }
     Object.setPrototypeOf(_dev, proto_part)
 

@@ -160,3 +160,39 @@ export function _report<ORAW extends boolean | undefined>(
     }
     return report as ctrl_proto_report_return<ORAW>
 }
+
+// #region require
+export function _require(this: CtrlDev<{}>, path: string): boolean
+export function _require(this: CtrlDev<{}>, path: string, value: boolean): void
+export function _require(this: CtrlDev<{}>, path: string, value?: boolean): void | boolean {
+    const now = this._requires$.value
+    if (value === undefined) {
+        return now.get(path) ?? false
+    }
+    const next = produce(now, (draft) => {
+        draft.set(path, value)
+    })
+    this._requires$.next(next)
+}
+
+export function _require$(this: CtrlDev<{}>, path: string): Observable<boolean> {
+    return this._requires$.pipe(map((x) => x.get(path) ?? false))
+}
+
+// #region disable
+export function _disable(this: CtrlDev<{}>, path: string): boolean
+export function _disable(this: CtrlDev<{}>, path: string, value: boolean): void
+export function _disable(this: CtrlDev<{}>, path: string, value?: boolean): void | boolean {
+    const now = this._disables$.value
+    if (value === undefined) {
+        return now.get(path) ?? false
+    }
+    const next = produce(now, (draft) => {
+        draft.set(path, value)
+    })
+    this._disables$.next(next)
+}
+
+export function _disable$(this: CtrlDev<{}>, path: string): Observable<boolean> {
+    return this._disables$.pipe(map((x) => x.get(path) ?? false))
+}

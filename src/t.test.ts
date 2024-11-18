@@ -242,3 +242,18 @@ describe('helper', () => {
         ctrl.report()
     })
 })
+
+// #region require
+describe('require', () => {
+    test('require', () => {
+        const ctrl = noui.make_form(data)
+        const b0 = ctrl.required(ctrl.paths.other.qqq)
+        expect(b0).toBe(false)
+        ctrl.required(ctrl.paths.other.qqq, true)
+        const b1 = ctrl.required(ctrl.paths.other.qqq)
+        expect(b1).toBe(true)
+        ctrl.required$(ctrl.paths.other.qqq).subscribe((b) => {
+            expect(b).toBe(true)
+        })
+    })
+})
